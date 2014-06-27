@@ -1,0 +1,4 @@
+slackomatic
+===========
+
+Lounge hardware control
