@@ -189,7 +189,7 @@ public class LoungeImpl implements ILounge {
 	}
 
 	protected void showVGAonTV() {
-		getNec().display().input().vga();
+		getNec().display().input().vga().invoke();
 	}
 
 	public void create(RestBuilder rest) {
