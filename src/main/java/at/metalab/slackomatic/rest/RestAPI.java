@@ -75,6 +75,10 @@ public class RestAPI {
 		return stringBuilder.toString();
 	}
 
+	public List<String> getEndpoints() {
+		return new LinkedList<String>(endpoints);
+	}
+
 	public HandlerCollection getHandlerCollection() {
 		return handlerCollection;
 	}
@@ -90,8 +94,8 @@ public class RestAPI {
 
 	private static void addMappings(List<String> endpoints,
 			ContextHandler contextHandler) {
-		endpoints.add(String.format("%s",
-				contextHandler.getContextPath(), contextHandler));
+		endpoints.add(String.format("%s", contextHandler.getContextPath(),
+				contextHandler));
 	}
 
 }

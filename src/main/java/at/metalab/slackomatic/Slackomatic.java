@@ -118,18 +118,34 @@ public class Slackomatic {
 				}
 			});
 
+			// return all registered endpoints in the slackomatic
 			restAPI.addFunction("layout", new ContextHandler() {
 				@Override
 				public void doHandle(String arg0, Request arg1,
 						HttpServletRequest arg2, HttpServletResponse arg3)
 						throws IOException, ServletException {
 					arg3.setStatus(200);
-					arg3.setContentType("text/plain");
-					arg3.getWriter().write(restAPI.dump());
+					arg3.setContentType("text/html");
+
+					StringBuilder sb = new StringBuilder(
+							"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body>");
+					for (String endpoint : restAPI.getEndpoints()) {
+						sb.append("<a target='_new' href='" + endpoint + "'>"
+								+ endpoint + "</a><br>");
+					}
+					sb.append("<br>");
+					sb.append("<code>");
+					for (String endpoint : restAPI.getEndpoints()) {
+						sb.append(endpoint);
+						sb.append("<br>");
+					}
+					sb.append("</code>");
+					sb.append("</body></html>");
+
+					arg3.getWriter().write(sb.toString());
 					arg3.flushBuffer();
 				}
 			});
-
 			slackomaticApiHandler.addHandler(restAPI.getHandlerCollection());
 		}
 
