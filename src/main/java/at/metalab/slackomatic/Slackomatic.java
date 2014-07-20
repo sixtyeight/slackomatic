@@ -1,5 +1,6 @@
 package at.metalab.slackomatic;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.logging.Logger;
@@ -39,10 +40,16 @@ public class Slackomatic {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		// lookup installation directory
-		String slackomaticDir = System.getProperty("slackomatic.home", String
-				.format("%s/slackomatic", System.getProperty("user.home")));
-		LOG.info(String.format("using %s as slackomatic dir", slackomaticDir));
+		// default location of the slackomatic directory
+		File slackomaticHome = new File(System.getProperty("user.home"),
+				"slackomatic");
+
+		// lookup custom installation directory if provided
+		if (System.getProperties().containsKey("slackomatic.home")) {
+			slackomaticHome = new File(System.getProperty("slackomatic.home"));
+		}
+		LOG.info(String.format("using %s as slackomatic home directory",
+				slackomaticHome.getAbsolutePath()));
 
 		// lookup port
 		int slackomaticPort = Integer.valueOf(System.getProperty(
@@ -64,15 +71,17 @@ public class Slackomatic {
 
 		{
 			// setup the objects which control the actual hardware
-			INec nec = new NecImpl('A', String.format("%s/nec", slackomaticDir));
-			IBenq benq = new ShellBenqImpl(String.format("%s/benq",
-					slackomaticDir));
-			IYamaha yamaha = new ShellYamahaImpl(String.format("%s/yamaha",
-					slackomaticDir));
+			INec nec = new NecImpl('A', new File(slackomaticHome, "nec"));
 
-			IKillswitch killswitch = new KillswitchImpl(String.format(
-					"%s/killswitch", slackomaticDir));
+			IBenq benq = new ShellBenqImpl(new File(slackomaticHome, "benq"));
 
+			IYamaha yamaha = new ShellYamahaImpl(new File(slackomaticHome,
+					"yamaha"));
+
+			IKillswitch killswitch = new KillswitchImpl(new File(
+					slackomaticHome, "killswitch"));
+
+			// create the handler which will receive all incoming requests
 			ServletContextHandler slackomaticHandler = new ServletContextHandler();
 			slackomaticHandler.setContextPath("/slackomatic");
 
@@ -83,13 +92,18 @@ public class Slackomatic {
 			final RestAPI restAPI = new RestAPI(
 					slackomaticHandler.getContextPath());
 
+			// register the devices
 			restAPI.addDevice("nec", nec);
 			restAPI.addDevice("benq", benq);
 			restAPI.addDevice("yamaha", yamaha);
 
+			// and add the lounge room
 			restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
 					killswitch));
 
+			// functions related to the slackomatic itself start here
+
+			// terminate the jvm
 			restAPI.addFunction("shutdown", new ContextHandler() {
 				@Override
 				public void doHandle(String arg0, Request arg1,
@@ -129,7 +143,10 @@ public class Slackomatic {
 		server.start();
 		LOG.info("server started");
 
-		server.join();
-		LOG.info("server shutdown");
+		try {
+			server.join();
+		} finally {
+			LOG.info("server shutdown");
+		}
 	}
 }

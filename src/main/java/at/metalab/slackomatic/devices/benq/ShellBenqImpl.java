@@ -10,12 +10,13 @@ import at.metalab.slackomatic.rest.RestBuilder;
 public class ShellBenqImpl implements IBenq {
 	private final File baseDir;
 
-	public ShellBenqImpl(String baseDir) {
-		this.baseDir = new File(baseDir);
+	public ShellBenqImpl(File baseDir) {
+		this.baseDir = baseDir;
 
 		if (!this.baseDir.canRead()) {
 			throw new RuntimeException(String.format(
-					"directory %s does not exist or is not readable", baseDir));
+					"directory %s does not exist or is not readable",
+					baseDir.getAbsolutePath()));
 		}
 	}
 

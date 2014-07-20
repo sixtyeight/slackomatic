@@ -15,7 +15,7 @@ public class ShellYamahaImpl implements IYamaha {
 
 	private final IInput input = new InputImpl();
 
-	public ShellYamahaImpl(String baseDir) {
+	public ShellYamahaImpl(File baseDir) {
 		this.inputsDir = new File(baseDir, "inputs");
 		this.requestsDir = new File(baseDir, "requests");
 
@@ -210,6 +210,9 @@ public class ShellYamahaImpl implements IYamaha {
 		};
 	}
 
+	/* (non-Javadoc)
+	 * @see at.metalab.slackomatic.rest.IRestable#create(at.metalab.slackomatic.rest.RestBuilder)
+	 */
 	public void create(RestBuilder rest) {
 		rest.add(mute(), "mute");
 		rest.add(power(), "power");

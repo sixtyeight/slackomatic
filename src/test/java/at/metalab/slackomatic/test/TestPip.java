@@ -1,12 +1,14 @@
 package at.metalab.slackomatic.test;
 
+import java.io.File;
+
 import at.metalab.slackomatic.devices.nec.INec;
 import at.metalab.slackomatic.devices.nec.NecImpl;
 
 public class TestPip {
 
 	public static void main(String[] args) throws Exception {
-		final String device = "/dev/null";
+		final File device = new File("/dev/null");
 
 		INec tv = new NecImpl('A', device);
 

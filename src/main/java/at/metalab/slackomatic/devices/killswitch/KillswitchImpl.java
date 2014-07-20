@@ -9,8 +9,8 @@ public class KillswitchImpl implements IKillswitch {
 
 	private final File workingDirectory;
 
-	public KillswitchImpl(String workingDirectory) {
-		this.workingDirectory = new File(workingDirectory);
+	public KillswitchImpl(File workingDirectory) {
+		this.workingDirectory = workingDirectory;
 	}
 
 	public IInvoker reset() {

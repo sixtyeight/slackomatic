@@ -1,12 +1,14 @@
 package at.metalab.slackomatic.test;
 
+import java.io.File;
+
 import at.metalab.slackomatic.devices.nec.INec;
 import at.metalab.slackomatic.devices.nec.NecImpl;
 
 public class TestNec {
 
 	public static void main(String[] args) {
-		final String device = "/dev/ttyUSB0";
+		final File device = new File("/dev/ttyUSB0");
 
 		INec monitor1 = new NecImpl('A', device);
 

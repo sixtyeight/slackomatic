@@ -15,9 +15,9 @@ public class NecImpl implements INec {
 
 	private final char deviceId;
 
-	private final String serialDevice;
+	private final File serialDevice;
 
-	public NecImpl(char deviceId, String serialDevice) {
+	public NecImpl(char deviceId, File serialDevice) {
 		if (!isValidId(deviceId)) {
 			throw new IllegalArgumentException("Invalid device Id specified");
 		}
@@ -31,8 +31,8 @@ public class NecImpl implements INec {
 		this.serialDevice = serialDevice;
 	}
 
-	private boolean isValidSerialDevice(String serialDevice) {
-		return serialDevice != null && !"".equals(serialDevice.trim());
+	private boolean isValidSerialDevice(File serialDevice) {
+		return serialDevice != null;
 	}
 
 	private boolean isValidId(char deviceId) {
@@ -335,8 +335,7 @@ public class NecImpl implements INec {
 		OutputStream out = null;
 
 		try {
-			File file = new File(serialDevice);
-			out = new FileOutputStream(file);
+			out = new FileOutputStream(serialDevice);
 
 			byte[] packet = message.createPacket();
 			logPacket(packet);
