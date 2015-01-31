@@ -4,6 +4,7 @@ import at.metalab.slackomatic.api.IInvoker;
 import at.metalab.slackomatic.api.IToggle;
 import at.metalab.slackomatic.devices.benq.IBenq;
 import at.metalab.slackomatic.devices.killswitch.IKillswitch;
+import at.metalab.slackomatic.devices.metacade.IMetacade;
 import at.metalab.slackomatic.devices.nec.INec;
 import at.metalab.slackomatic.devices.yamaha.IYamaha;
 import at.metalab.slackomatic.rest.RestBuilder;
@@ -16,13 +17,16 @@ public class LoungeImpl implements ILounge {
 
 	private final INec nec;
 
+	private final IMetacade metacade;
+
 	private final IKillswitch killswitch;
 
-	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec,
+	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade,
 			IKillswitch killswitch) {
 		this.benq = benq;
 		this.yamaha = yamaha;
 		this.nec = nec;
+		this.metacade = metacade;
 		this.killswitch = killswitch;
 	}
 
@@ -58,6 +62,17 @@ public class LoungeImpl implements ILounge {
 					wakeUp();
 					showHDMImirrored();
 					getYamaha().getInput().av5().invoke();
+				}
+			};
+		}
+
+		public IInvoker chromecast() {
+			return new IInvoker() {
+
+				public void invoke() {
+					wakeUp();
+					showHDMImirrored();
+					getYamaha().getInput().hdmi4().invoke();
 				}
 			};
 		}
@@ -125,12 +140,14 @@ public class LoungeImpl implements ILounge {
 				powerSaving().powerTv().on();
 				powerSaving().powerProjector().on();
 				powerSaving().powerYamaha().on();
+				powerSaving().powerMetacade().on();
 			}
 
 			public void off() {
 				powerSaving().powerTv().off();
 				powerSaving().powerProjector().off();
 				powerSaving().powerYamaha().off();
+				powerSaving().powerMetacade().off();
 			}
 		};
 	}
@@ -151,6 +168,10 @@ public class LoungeImpl implements ILounge {
 
 		public IToggle powerYamaha() {
 			return getYamaha().power();
+		}
+
+		public IToggle powerMetacade() {
+			return getMetacade().power();
 		}
 
 		public IInvoker resetKillswitch() {
@@ -204,13 +225,16 @@ public class LoungeImpl implements ILounge {
 		rest.add(devices().screeninvaderStable(),
 				"devices/screeninvader_stable");
 		rest.add(devices().wii(), "devices/wii");
+		rest.add(devices().chromecast(), "devices/chromecast");
 
 		rest.add(powerSaving().blankProjector(), "powersaving/projector/blank");
 		rest.add(powerSaving().powerProjector(), "powersaving/projector/power");
 		rest.add(powerSaving().powerTv(), "powersaving/tv/power");
+		rest.add(powerSaving().powerMetacade(), "powersaving/metacade/power");
 		rest.add(powerSaving().powerYamaha(), "powersaving/yamaha/power");
 
-		rest.add(powerSaving().resetKillswitch(), "powersaving/killswitch/reset");
+		rest.add(powerSaving().resetKillswitch(),
+				"powersaving/killswitch/reset");
 	}
 
 	public IDevices devices() {
@@ -231,5 +255,9 @@ public class LoungeImpl implements ILounge {
 
 	protected INec getNec() {
 		return nec;
+	}
+
+	protected IMetacade getMetacade() {
+		return metacade;
 	}
 }

@@ -25,6 +25,8 @@ import at.metalab.slackomatic.devices.benq.IBenq;
 import at.metalab.slackomatic.devices.benq.ShellBenqImpl;
 import at.metalab.slackomatic.devices.killswitch.IKillswitch;
 import at.metalab.slackomatic.devices.killswitch.KillswitchImpl;
+import at.metalab.slackomatic.devices.metacade.IMetacade;
+import at.metalab.slackomatic.devices.metacade.MetacadeImpl;
 import at.metalab.slackomatic.devices.nec.INec;
 import at.metalab.slackomatic.devices.nec.NecImpl;
 import at.metalab.slackomatic.devices.yamaha.IYamaha;
@@ -78,6 +80,12 @@ public class Slackomatic {
 			IYamaha yamaha = new ShellYamahaImpl(new File(slackomaticHome,
 					"yamaha"));
 
+			IMetacade metacade = new MetacadeImpl("00:11:09:7B:73:68",
+					"http://10.20.30.17:1234");
+			// TODO: get the real mac
+			// addr from the
+			// metacade
+
 			IKillswitch killswitch = new KillswitchImpl(new File(
 					slackomaticHome, "killswitch"));
 
@@ -96,10 +104,11 @@ public class Slackomatic {
 			restAPI.addDevice("nec", nec);
 			restAPI.addDevice("benq", benq);
 			restAPI.addDevice("yamaha", yamaha);
+			restAPI.addDevice("metacade", metacade);
 
 			// and add the lounge room
 			restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
-					killswitch));
+					metacade, killswitch));
 
 			// functions related to the slackomatic itself start here
 
