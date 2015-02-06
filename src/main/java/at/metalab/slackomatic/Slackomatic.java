@@ -82,9 +82,6 @@ public class Slackomatic {
 
 			IMetacade metacade = new MetacadeImpl("00:11:09:7B:73:68",
 					"http://10.20.30.17:1234");
-			// TODO: get the real mac
-			// addr from the
-			// metacade
 
 			IKillswitch killswitch = new KillswitchImpl(new File(
 					slackomaticHome, "killswitch"));
