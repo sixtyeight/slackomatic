@@ -16,7 +16,7 @@ public interface ILounge extends IRoom, IRestable {
 		IInvoker ps3();
 
 		IInvoker wii();
-		
+
 		IInvoker chromecast();
 
 		IInvoker ownHDMI();
@@ -34,8 +34,10 @@ public interface ILounge extends IRoom, IRestable {
 		IToggle powerTv();
 
 		IToggle powerYamaha();
-		
+
 		IToggle powerMetacade();
+
+		IToggle powerLamp1();
 
 		IInvoker resetKillswitch();
 	}

@@ -21,13 +21,16 @@ public class LoungeImpl implements ILounge {
 
 	private final IKillswitch killswitch;
 
+	private final IToggle lamp1;
+
 	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade,
-			IKillswitch killswitch) {
+			IKillswitch killswitch, IToggle lamp1) {
 		this.benq = benq;
 		this.yamaha = yamaha;
 		this.nec = nec;
 		this.metacade = metacade;
 		this.killswitch = killswitch;
+		this.lamp1 = lamp1;
 	}
 
 	private final IDevices devices = new IDevices() {
@@ -148,6 +151,7 @@ public class LoungeImpl implements ILounge {
 				powerSaving().powerProjector().off();
 				powerSaving().powerYamaha().off();
 				powerSaving().powerMetacade().off();
+				powerSaving().powerLamp1().off();
 			}
 		};
 	}
@@ -172,6 +176,10 @@ public class LoungeImpl implements ILounge {
 
 		public IToggle powerMetacade() {
 			return getMetacade().power();
+		}
+
+		public IToggle powerLamp1() {
+			return lamp1;
 		}
 
 		public IInvoker resetKillswitch() {
@@ -232,6 +240,7 @@ public class LoungeImpl implements ILounge {
 		rest.add(powerSaving().powerTv(), "powersaving/tv/power");
 		rest.add(powerSaving().powerMetacade(), "powersaving/metacade/power");
 		rest.add(powerSaving().powerYamaha(), "powersaving/yamaha/power");
+		rest.add(powerSaving().powerLamp1(), "powersaving/lamp1/power");
 
 		rest.add(powerSaving().resetKillswitch(),
 				"powersaving/killswitch/reset");

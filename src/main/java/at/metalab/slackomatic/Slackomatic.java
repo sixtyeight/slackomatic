@@ -21,6 +21,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 
+import at.metalab.slackomatic.api.IToggle;
 import at.metalab.slackomatic.devices.benq.IBenq;
 import at.metalab.slackomatic.devices.benq.ShellBenqImpl;
 import at.metalab.slackomatic.devices.killswitch.IKillswitch;
@@ -86,6 +87,21 @@ public class Slackomatic {
 			IKillswitch killswitch = new KillswitchImpl(new File(
 					slackomaticHome, "killswitch"));
 
+			IToggle lamp1 = new IToggle() {
+
+				public void on() {
+					Util.executeCommand(new File(
+							"/home/pi/slackomatic-addons/homematic"),
+							"./power0.sh", "1");
+				}
+
+				public void off() {
+					Util.executeCommand(new File(
+							"/home/pi/slackomatic-addons/homematic"),
+							"./power0.sh", "0");
+				}
+			};
+
 			// create the handler which will receive all incoming requests
 			ServletContextHandler slackomaticHandler = new ServletContextHandler();
 			slackomaticHandler.setContextPath("/slackomatic");
@@ -105,7 +121,7 @@ public class Slackomatic {
 
 			// and add the lounge room
 			restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
-					metacade, killswitch));
+					metacade, killswitch, lamp1));
 
 			// functions related to the slackomatic itself start here
 
