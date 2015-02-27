@@ -188,6 +188,7 @@ public class LoungeImpl implements ILounge {
 	};
 
 	private void wakeUp() {
+		getYamaha().volume().low();
 		getYamaha().mute().off();
 		getYamaha().power().on();
 	}
@@ -242,6 +243,10 @@ public class LoungeImpl implements ILounge {
 		rest.add(powerSaving().powerYamaha(), "powersaving/yamaha/power");
 		rest.add(powerSaving().powerLamp1(), "powersaving/lamp1/power");
 
+		rest.add(yamaha.volume().low(), "volume/low");
+		rest.add(yamaha.volume().medium(), "volume/medium");
+		rest.add(yamaha.volume().high(), "volume/high");
+		
 		rest.add(powerSaving().resetKillswitch(),
 				"powersaving/killswitch/reset");
 	}

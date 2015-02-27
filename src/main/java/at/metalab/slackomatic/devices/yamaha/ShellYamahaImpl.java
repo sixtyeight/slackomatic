@@ -15,6 +15,8 @@ public class ShellYamahaImpl implements IYamaha {
 
 	private final IInput input = new InputImpl();
 
+	private final IVolume volume = new VolumeImpl();
+
 	public ShellYamahaImpl(File baseDir) {
 		this.inputsDir = new File(baseDir, "inputs");
 		this.requestsDir = new File(baseDir, "requests");
@@ -30,6 +32,38 @@ public class ShellYamahaImpl implements IYamaha {
 					String.format(
 							"requestsDir directory %s does not exist or is not readable",
 							baseDir));
+		}
+	}
+
+	private class VolumeImpl implements IYamaha.IVolume {
+		public IInvoker high() {
+			return new IInvoker() {
+
+				public void invoke() {
+					ShellYamahaImpl.this.mute().off();
+					sendRequest("volume_laut");
+				}
+			};
+		}
+
+		public IInvoker low() {
+			return new IInvoker() {
+
+				public void invoke() {
+					ShellYamahaImpl.this.mute().off();
+					sendRequest("volume_leise");
+				}
+			};
+		}
+
+		public IInvoker medium() {
+			return new IInvoker() {
+
+				public void invoke() {
+					ShellYamahaImpl.this.mute().off();
+					sendRequest("volume_medium");
+				}
+			};
 		}
 	}
 
@@ -210,8 +244,16 @@ public class ShellYamahaImpl implements IYamaha {
 		};
 	}
 
-	/* (non-Javadoc)
-	 * @see at.metalab.slackomatic.rest.IRestable#create(at.metalab.slackomatic.rest.RestBuilder)
+	public IVolume volume() {
+		return volume;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * at.metalab.slackomatic.rest.IRestable#create(at.metalab.slackomatic.rest
+	 * .RestBuilder)
 	 */
 	public void create(RestBuilder rest) {
 		rest.add(mute(), "mute");
@@ -232,6 +274,9 @@ public class ShellYamahaImpl implements IYamaha {
 		rest.add(getInput().hdmi4(), "input/hdmi4");
 		rest.add(getInput().hdmi5(), "input/hdmi5");
 		rest.add(getInput().dock(), "input/dock");
+		rest.add(volume().low(), "volume/low");
+		rest.add(volume().medium(), "volume/medium");
+		rest.add(volume().high(), "volume/high");
 	}
 
 	private synchronized String executeCommand(File workingDirectory,

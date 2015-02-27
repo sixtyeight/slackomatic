@@ -6,6 +6,15 @@ import at.metalab.slackomatic.api.IToggle;
 import at.metalab.slackomatic.rest.IRestable;
 
 public interface IYamaha extends IDevice, IRestable {
+
+	public interface IVolume {
+		IInvoker low();
+
+		IInvoker medium();
+
+		IInvoker high();
+	}
+
 	public interface IInput {
 		IInvoker av1();
 
@@ -40,6 +49,8 @@ public interface IYamaha extends IDevice, IRestable {
 		IInvoker dock();
 	}
 
+	IVolume volume();
+	
 	IInput getInput();
 
 	IToggle power();
