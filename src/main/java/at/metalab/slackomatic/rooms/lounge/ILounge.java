@@ -42,6 +42,18 @@ public interface ILounge extends IRoom, IRestable {
 		IInvoker resetKillswitch();
 	}
 
+	public interface ILighting {
+		IInvoker off();
+
+		IInvoker chillig();
+
+		IInvoker normal();
+
+		IInvoker chineseSweatshop();
+	}
+
+	ILighting lighting();
+	
 	IToggle power();
 
 	IDevices devices();

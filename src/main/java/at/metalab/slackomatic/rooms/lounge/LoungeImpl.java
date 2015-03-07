@@ -1,5 +1,8 @@
 package at.metalab.slackomatic.rooms.lounge;
 
+import java.io.File;
+
+import at.metalab.slackomatic.Util;
 import at.metalab.slackomatic.api.IInvoker;
 import at.metalab.slackomatic.api.IToggle;
 import at.metalab.slackomatic.devices.benq.IBenq;
@@ -22,6 +25,55 @@ public class LoungeImpl implements ILounge {
 	private final IKillswitch killswitch;
 
 	private final IToggle lamp1;
+
+	private final ILighting lighting = new ILighting() {
+
+		private void setIntensity(String value) {
+			Util.executeCommand(new File(
+					"/home/pi/slackomatic-addons/homematic"), "./power1.sh",
+					value);
+		}
+
+		public IInvoker off() {
+			return new IInvoker() {
+
+				public void invoke() {
+					setIntensity("0");
+					lamp1.off();
+				}
+			};
+		}
+
+		public IInvoker normal() {
+			return new IInvoker() {
+
+				public void invoke() {
+					setIntensity("0.5");
+					lamp1.on();
+				}
+			};
+		}
+
+		public IInvoker chineseSweatshop() {
+			return new IInvoker() {
+
+				public void invoke() {
+					setIntensity("1");
+					lamp1.on();
+				}
+			};
+		}
+
+		public IInvoker chillig() {
+			return new IInvoker() {
+
+				public void invoke() {
+					setIntensity("0.3");
+					lamp1.on();
+				}
+			};
+		}
+	};
 
 	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade,
 			IKillswitch killswitch, IToggle lamp1) {
@@ -152,6 +204,7 @@ public class LoungeImpl implements ILounge {
 				powerSaving().powerYamaha().off();
 				powerSaving().powerMetacade().off();
 				powerSaving().powerLamp1().off();
+				lighting.off().invoke();
 			}
 		};
 	}
@@ -246,9 +299,14 @@ public class LoungeImpl implements ILounge {
 		rest.add(yamaha.volume().low(), "volume/low");
 		rest.add(yamaha.volume().medium(), "volume/medium");
 		rest.add(yamaha.volume().high(), "volume/high");
-		
+
 		rest.add(powerSaving().resetKillswitch(),
 				"powersaving/killswitch/reset");
+
+		rest.add(lighting().off(), "lighting/off");
+		rest.add(lighting().chillig(), "lighting/chillig");
+		rest.add(lighting().normal(), "lighting/normal");
+		rest.add(lighting().chineseSweatshop(), "lighting/chinese_sweatshop");
 	}
 
 	public IDevices devices() {
@@ -257,6 +315,10 @@ public class LoungeImpl implements ILounge {
 
 	public IPowerSaving powerSaving() {
 		return powerSaving;
+	}
+
+	public ILighting lighting() {
+		return lighting;
 	}
 
 	protected IBenq getBenq() {
