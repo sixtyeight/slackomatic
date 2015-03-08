@@ -45,6 +45,8 @@ public interface ILounge extends IRoom, IRestable {
 	public interface ILighting {
 		IInvoker off();
 
+		IInvoker superChillig();
+		
 		IInvoker chillig();
 
 		IInvoker normal();

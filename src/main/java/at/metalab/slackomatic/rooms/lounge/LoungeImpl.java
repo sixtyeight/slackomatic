@@ -44,6 +44,16 @@ public class LoungeImpl implements ILounge {
 			};
 		}
 
+		public IInvoker superChillig() {
+			return new IInvoker() {
+
+				public void invoke() {
+					setIntensity("0.3");
+					lamp1.off();
+				}
+			};
+		}
+
 		public IInvoker normal() {
 			return new IInvoker() {
 
@@ -304,6 +314,7 @@ public class LoungeImpl implements ILounge {
 				"powersaving/killswitch/reset");
 
 		rest.add(lighting().off(), "lighting/off");
+		rest.add(lighting().superChillig(), "lighting/super_chillig");
 		rest.add(lighting().chillig(), "lighting/chillig");
 		rest.add(lighting().normal(), "lighting/normal");
 		rest.add(lighting().chineseSweatshop(), "lighting/chinese_sweatshop");
