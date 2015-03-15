@@ -80,7 +80,7 @@ public class ShellYamahaImpl implements IYamaha {
 		}
 
 		private boolean canAdjustVolume() {
-			return System.currentTimeMillis() - tsLastVolumeAdjust >= 1000;
+			return System.currentTimeMillis() - tsLastVolumeAdjust >= 500;
 		}
 
 		public IInvoker increase() {
