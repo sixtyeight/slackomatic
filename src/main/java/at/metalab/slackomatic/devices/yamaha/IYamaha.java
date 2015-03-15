@@ -13,6 +13,10 @@ public interface IYamaha extends IDevice, IRestable {
 		IInvoker medium();
 
 		IInvoker high();
+		
+		IInvoker increase();
+		
+		IInvoker decrease();
 	}
 
 	public interface IInput {

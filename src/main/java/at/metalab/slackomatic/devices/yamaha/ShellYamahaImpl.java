@@ -1,6 +1,7 @@
 package at.metalab.slackomatic.devices.yamaha;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 import at.metalab.slackomatic.Util;
 import at.metalab.slackomatic.api.IInvoker;
@@ -8,6 +9,9 @@ import at.metalab.slackomatic.api.IToggle;
 import at.metalab.slackomatic.rest.RestBuilder;
 
 public class ShellYamahaImpl implements IYamaha {
+
+	private final static Logger LOG = Logger.getLogger(ShellYamahaImpl.class
+			.getCanonicalName());
 
 	private final File inputsDir;
 
@@ -62,6 +66,53 @@ public class ShellYamahaImpl implements IYamaha {
 				public void invoke() {
 					ShellYamahaImpl.this.mute().off();
 					sendRequest("volume_medium");
+				}
+			};
+		}
+
+		// volume adjust throttling
+		private final Object VOL_MONITOR = new Object();
+
+		private volatile long tsLastVolumeAdjust = System.currentTimeMillis();
+
+		private void updateTsLastVolumeAdjust() {
+			tsLastVolumeAdjust = System.currentTimeMillis();
+		}
+
+		private boolean canAdjustVolume() {
+			return System.currentTimeMillis() - tsLastVolumeAdjust >= 1000;
+		}
+
+		public IInvoker increase() {
+			return new IInvoker() {
+
+				public void invoke() {
+					synchronized (VOL_MONITOR) {
+						if (canAdjustVolume()) {
+							updateTsLastVolumeAdjust();
+							Util.executeCommand(requestsDir,
+									"./increase_volume.sh");
+						} else {
+							LOG.info("skipping volume increase due to rate limiting");
+						}
+					}
+				}
+			};
+		}
+
+		public IInvoker decrease() {
+			return new IInvoker() {
+
+				public void invoke() {
+					synchronized (VOL_MONITOR) {
+						if (canAdjustVolume()) {
+							updateTsLastVolumeAdjust();
+							Util.executeCommand(requestsDir,
+									"./decrease_volume.sh");
+						} else {
+							LOG.info("skipping volume decrease due to rate limiting");
+						}
+					}
 				}
 			};
 		}
@@ -277,6 +328,8 @@ public class ShellYamahaImpl implements IYamaha {
 		rest.add(volume().low(), "volume/low");
 		rest.add(volume().medium(), "volume/medium");
 		rest.add(volume().high(), "volume/high");
+		rest.add(volume().increase(), "volume/adjust/increase");
+		rest.add(volume().decrease(), "volume/adjust/decrease");
 	}
 
 	private synchronized String executeCommand(File workingDirectory,
