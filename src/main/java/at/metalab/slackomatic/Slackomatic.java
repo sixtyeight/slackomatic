@@ -3,6 +3,7 @@ package at.metalab.slackomatic;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.DispatcherType;
@@ -137,6 +138,28 @@ public class Slackomatic {
 					arg3.flushBuffer();
 
 					System.exit(0);
+				}
+			});
+
+			restAPI.addFunction("build", new ContextHandler() {
+				@Override
+				public void doHandle(String arg0, Request arg1,
+						HttpServletRequest arg2, HttpServletResponse arg3)
+						throws IOException, ServletException {
+					arg3.setStatus(200);
+					arg3.setContentType("application/json");
+
+					Properties build = new Properties();
+					build.load(Thread.currentThread().getContextClassLoader()
+							.getResourceAsStream("build.properties"));
+
+					arg3.getWriter().write(
+							String.format(
+									"{ \"version\": \"%s\", \"timestamp\": \"%s\" }",
+									build.getProperty("version"),
+									build.getProperty("timestamp")));
+
+					arg3.flushBuffer();
 				}
 			});
 
