@@ -22,28 +22,27 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 
-import at.metalab.slackomatic.api.IToggle;
-import at.metalab.slackomatic.devices.benq.IBenq;
-import at.metalab.slackomatic.devices.benq.ShellBenqImpl;
-import at.metalab.slackomatic.devices.killswitch.IKillswitch;
-import at.metalab.slackomatic.devices.killswitch.KillswitchImpl;
-import at.metalab.slackomatic.devices.metacade.IMetacade;
-import at.metalab.slackomatic.devices.metacade.MetacadeImpl;
-import at.metalab.slackomatic.devices.nec.INec;
-import at.metalab.slackomatic.devices.nec.NecImpl;
-import at.metalab.slackomatic.devices.yamaha.IYamaha;
-import at.metalab.slackomatic.devices.yamaha.ShellYamahaImpl;
 import at.metalab.slackomatic.rest.RestAPI;
-import at.metalab.slackomatic.rooms.lounge.LoungeImpl;
 
-public class Slackomatic {
-	private final static Logger LOG = Logger.getLogger(Slackomatic.class
-			.getCanonicalName());
+public abstract class SlackomaticTemplate {
+	private final static Logger LOG = Logger
+			.getLogger(SlackomaticTemplate.class.getCanonicalName());
+
+	private String uiHome = "";
+
+	public SlackomaticTemplate(String uiHome, String[] args) throws Exception {
+		this.uiHome = uiHome;
+		init(args);
+	}
+
+	protected abstract void setup(RestAPI restApi, File slackomaticHome);
 
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws Exception {
+	private void init(String[] args) throws Exception {
+		LOG.info("initializing " + this.getClass().getName());
+
 		// default location of the slackomatic directory
 		File slackomaticHome = new File(System.getProperty("user.home"),
 				"slackomatic");
@@ -69,40 +68,12 @@ public class Slackomatic {
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setDirectoriesListed(false);
 		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-		resourceHandler.setBaseResource(Resource.newClassPathResource("ui"));
+		resourceHandler.setBaseResource(Resource.newClassPathResource(String
+				.format("ui/%s", uiHome)));
 
 		HandlerCollection slackomaticApiHandler = new HandlerCollection();
 
 		{
-			// setup the objects which control the actual hardware
-			INec nec = new NecImpl('A', new File(slackomaticHome, "nec"));
-
-			IBenq benq = new ShellBenqImpl(new File(slackomaticHome, "benq"));
-
-			IYamaha yamaha = new ShellYamahaImpl(new File(slackomaticHome,
-					"yamaha"));
-
-			IMetacade metacade = new MetacadeImpl("00:11:09:7B:73:68",
-					"http://10.20.30.17:1234");
-
-			IKillswitch killswitch = new KillswitchImpl(new File(
-					slackomaticHome, "killswitch"));
-
-			IToggle lamp1 = new IToggle() {
-
-				public void on() {
-					Util.executeCommand(new File(
-							"/home/pi/slackomatic-addons/homematic"),
-							"./power0.sh", "1");
-				}
-
-				public void off() {
-					Util.executeCommand(new File(
-							"/home/pi/slackomatic-addons/homematic"),
-							"./power0.sh", "0");
-				}
-			};
-
 			// create the handler which will receive all incoming requests
 			ServletContextHandler slackomaticHandler = new ServletContextHandler();
 			slackomaticHandler.setContextPath("/slackomatic");
@@ -114,15 +85,7 @@ public class Slackomatic {
 			final RestAPI restAPI = new RestAPI(
 					slackomaticHandler.getContextPath());
 
-			// register the devices
-			restAPI.addDevice("nec", nec);
-			restAPI.addDevice("benq", benq);
-			restAPI.addDevice("yamaha", yamaha);
-			restAPI.addDevice("metacade", metacade);
-
-			// and add the lounge room
-			restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
-					metacade, killswitch, lamp1));
+			setup(restAPI, slackomaticHome);
 
 			// functions related to the slackomatic itself start here
 
@@ -153,11 +116,11 @@ public class Slackomatic {
 					build.load(Thread.currentThread().getContextClassLoader()
 							.getResourceAsStream("build.properties"));
 
-					arg3.getWriter().write(
-							String.format(
-									"{ \"version\": \"%s\", \"timestamp\": \"%s\" }",
-									build.getProperty("version"),
-									build.getProperty("timestamp")));
+					arg3.getWriter()
+							.write(String
+									.format("{ \"version\": \"%s\", \"timestamp\": \"%s\" }",
+											build.getProperty("version"),
+											build.getProperty("timestamp")));
 
 					arg3.flushBuffer();
 				}
@@ -179,13 +142,11 @@ public class Slackomatic {
 								+ endpoint + "</a><br>");
 					}
 					sb.append("<br>");
-					sb.append("<code>");
-					for (String endpoint : restAPI.getEndpoints()) {
-						sb.append(endpoint);
-						sb.append("<br>");
-					}
-					sb.append("</code>");
-					sb.append("</body></html>");
+					/*
+					 * sb.append("<code>"); for (String endpoint :
+					 * restAPI.getEndpoints()) { sb.append(endpoint);
+					 * sb.append("<br>"); } sb.append("</code>");
+					 */sb.append("</body></html>");
 
 					arg3.getWriter().write(sb.toString());
 					arg3.flushBuffer();
