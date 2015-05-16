@@ -171,7 +171,7 @@ public class LoungeImpl implements ILounge {
 				public void invoke() {
 					wakeUp();
 					showHDMImirrored();
-					getYamaha().getInput().hdmi1().invoke();
+					getYamaha().getInput().vAux().invoke();
 				}
 			};
 		}

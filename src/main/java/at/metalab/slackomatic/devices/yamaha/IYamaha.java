@@ -20,6 +20,8 @@ public interface IYamaha extends IDevice, IRestable {
 	}
 
 	public interface IInput {
+		IInvoker vAux();
+		
 		IInvoker av1();
 
 		IInvoker av2();

@@ -120,6 +120,15 @@ public class ShellYamahaImpl implements IYamaha {
 
 	private class InputImpl implements IYamaha.IInput {
 
+		public IInvoker vAux() {
+			return new IInvoker() {
+
+				public void invoke() {
+					sendInput("V-AUX");
+				}
+			};
+		}
+		
 		public IInvoker av1() {
 			return new IInvoker() {
 
@@ -313,6 +322,7 @@ public class ShellYamahaImpl implements IYamaha {
 		rest.add(getInput().audio2(), "input/audio2");
 		rest.add(getInput().audio3(), "input/audio3");
 		rest.add(getInput().audio4(), "input/audio4");
+		rest.add(getInput().vAux(), "input/v_aux");
 		rest.add(getInput().av1(), "input/av1");
 		rest.add(getInput().av2(), "input/av2");
 		rest.add(getInput().av3(), "input/av3");
