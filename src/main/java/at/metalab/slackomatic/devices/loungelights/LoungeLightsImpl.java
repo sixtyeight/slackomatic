@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
-import org.fusesource.mqtt.client.BlockingConnection;
+import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
@@ -94,7 +94,7 @@ public class LoungeLightsImpl implements ILoungeLights {
 		sendSetColorCommand(new SetColorCommand().setWhite(value));
 	}
 
-	private volatile BlockingConnection connection = null;
+	private volatile FutureConnection connection = null;
 
 	private synchronized void sendSetColorCommand(
 			SetColorCommand setColorCommand) {
@@ -108,9 +108,9 @@ public class LoungeLightsImpl implements ILoungeLights {
 				return;
 			}
 
-			BlockingConnection connection = mqtt.blockingConnection();
+			FutureConnection connection = mqtt.futureConnection();
 			try {
-				connection.connect();
+				connection.connect().await();
 			} catch (Exception exception) {
 				LOG.severe("could not connect to mqtt server at: " + mqttHost);
 				return;
