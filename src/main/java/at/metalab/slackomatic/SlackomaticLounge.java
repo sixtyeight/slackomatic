@@ -7,6 +7,8 @@ import at.metalab.slackomatic.devices.benq.IBenq;
 import at.metalab.slackomatic.devices.benq.ShellBenqImpl;
 import at.metalab.slackomatic.devices.killswitch.IKillswitch;
 import at.metalab.slackomatic.devices.killswitch.KillswitchImpl;
+import at.metalab.slackomatic.devices.loungelights.ILoungeLights;
+import at.metalab.slackomatic.devices.loungelights.LoungeLightsImpl;
 import at.metalab.slackomatic.devices.metacade.IMetacade;
 import at.metalab.slackomatic.devices.metacade.MetacadeImpl;
 import at.metalab.slackomatic.devices.nec.INec;
@@ -34,6 +36,9 @@ public class SlackomaticLounge {
 				IMetacade metacade = new MetacadeImpl("00:11:09:7B:73:68",
 						"http://10.20.30.17:1234");
 
+				ILoungeLights loungeLights = new LoungeLightsImpl(
+						"tcp://10.20.30.90:1883", "lounge-light");
+
 				IKillswitch killswitch = new KillswitchImpl(new File(
 						slackomaticHome, "killswitch"));
 
@@ -57,10 +62,11 @@ public class SlackomaticLounge {
 				restAPI.addDevice("benq", benq);
 				restAPI.addDevice("yamaha", yamaha);
 				restAPI.addDevice("metacade", metacade);
+				restAPI.addDevice("loungelights", loungeLights);
 
 				// and add the lounge room
 				restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
-						metacade, killswitch, lamp1));
+						metacade, killswitch, lamp1, loungeLights));
 			}
 		};
 	}

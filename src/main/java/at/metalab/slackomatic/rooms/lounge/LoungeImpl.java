@@ -7,6 +7,7 @@ import at.metalab.slackomatic.api.IInvoker;
 import at.metalab.slackomatic.api.IToggle;
 import at.metalab.slackomatic.devices.benq.IBenq;
 import at.metalab.slackomatic.devices.killswitch.IKillswitch;
+import at.metalab.slackomatic.devices.loungelights.ILoungeLights;
 import at.metalab.slackomatic.devices.metacade.IMetacade;
 import at.metalab.slackomatic.devices.nec.INec;
 import at.metalab.slackomatic.devices.yamaha.IYamaha;
@@ -26,6 +27,8 @@ public class LoungeImpl implements ILounge {
 
 	private final IToggle lamp1;
 
+	private final ILoungeLights loungeLights;
+
 	private final ILighting lighting = new ILighting() {
 
 		private void setIntensity(String value) {
@@ -40,6 +43,7 @@ public class LoungeImpl implements ILounge {
 				public void invoke() {
 					setIntensity("0");
 					lamp1.off();
+					loungeLights.power().off().invoke();
 				}
 			};
 		}
@@ -50,6 +54,8 @@ public class LoungeImpl implements ILounge {
 				public void invoke() {
 					setIntensity("0.3");
 					lamp1.off();
+					loungeLights.power().whiteOff().invoke();
+					loungeLights.setAmber("20");
 				}
 			};
 		}
@@ -60,6 +66,8 @@ public class LoungeImpl implements ILounge {
 				public void invoke() {
 					setIntensity("0.5");
 					lamp1.on();
+					loungeLights.setWhite("75");
+					loungeLights.setAmber("125");
 				}
 			};
 		}
@@ -70,6 +78,8 @@ public class LoungeImpl implements ILounge {
 				public void invoke() {
 					setIntensity("1");
 					lamp1.on();
+					loungeLights.setWhite("255");
+					loungeLights.setAmber("255");
 				}
 			};
 		}
@@ -80,19 +90,22 @@ public class LoungeImpl implements ILounge {
 				public void invoke() {
 					setIntensity("0.3");
 					lamp1.on();
+					loungeLights.setWhite("40");
+					loungeLights.setAmber("50");
 				}
 			};
 		}
 	};
 
 	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade,
-			IKillswitch killswitch, IToggle lamp1) {
+			IKillswitch killswitch, IToggle lamp1, ILoungeLights loungeLights) {
 		this.benq = benq;
 		this.yamaha = yamaha;
 		this.nec = nec;
 		this.metacade = metacade;
 		this.killswitch = killswitch;
 		this.lamp1 = lamp1;
+		this.loungeLights = loungeLights;
 	}
 
 	private final IDevices devices = new IDevices() {
@@ -346,5 +359,9 @@ public class LoungeImpl implements ILounge {
 
 	protected IMetacade getMetacade() {
 		return metacade;
+	}
+
+	protected ILoungeLights getLoungeLight() {
+		return loungeLights;
 	}
 }
