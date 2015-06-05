@@ -1,13 +1,10 @@
 package at.metalab.slackomatic.devices.loungelights;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
-import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
-import org.fusesource.mqtt.client.QoS;
 
+import at.metalab.slackomatic.MqttUnreliablePublisher;
 import at.metalab.slackomatic.api.IInvoker;
 import at.metalab.slackomatic.rest.RestBuilder;
 
@@ -16,9 +13,7 @@ public class LoungeLightsImpl implements ILoungeLights {
 	private final static Logger LOG = Logger.getLogger(LoungeLightsImpl.class
 			.getCanonicalName());
 
-	private final String mqttHost;
-
-	private final String mqttTopic;
+	private final MqttUnreliablePublisher publisher;
 
 	private final SetColorCommand ALL_OFF = new SetColorCommand().setAmber("0")
 			.setWhite("0").setRGB("0", "0", "0");
@@ -29,9 +24,8 @@ public class LoungeLightsImpl implements ILoungeLights {
 	private final SetColorCommand RGB_OFF = new SetColorCommand().setRGB("0",
 			"0", "0");
 
-	public LoungeLightsImpl(String mqttHost, String mqttTopic) {
-		this.mqttHost = mqttHost;
-		this.mqttTopic = mqttTopic;
+	public LoungeLightsImpl(MQTT mqtt, String topic) {
+		this.publisher = new MqttUnreliablePublisher(mqtt, topic);
 	}
 
 	public void create(RestBuilder rest) {
@@ -94,44 +88,11 @@ public class LoungeLightsImpl implements ILoungeLights {
 		sendSetColorCommand(new SetColorCommand().setWhite(value));
 	}
 
-	private volatile FutureConnection connection = null;
-
 	private synchronized void sendSetColorCommand(
 			SetColorCommand setColorCommand) {
-		if (connection == null) {
-			MQTT mqtt = new MQTT();
-
-			try {
-				mqtt.setHost(mqttHost);
-			} catch (URISyntaxException uriSyntaxException) {
-				LOG.severe("could not create mqtt object for: " + mqttHost);
-				return;
-			}
-
-			FutureConnection connection = mqtt.futureConnection();
-			try {
-				connection.connect().await();
-			} catch (Exception exception) {
-				LOG.severe("could not connect to mqtt server at: " + mqttHost);
-				return;
-			}
-
-			this.connection = connection;
-		}
-
-		String payload = setColorCommand.buildMessage();
-
-		try {
-			connection.publish(mqttTopic, payload.getBytes("ISO-8859-1"),
-					QoS.AT_LEAST_ONCE, false);
-
-			LOG.info(String.format("sent '%s' to '%s/%s'", payload, mqttHost,
-					mqttTopic));
-		} catch (UnsupportedEncodingException willNeverHappen) {
-		} catch (Exception exception) {
-			LOG.severe(String.format("sending '%s' to '%s/%s' failed: %s",
-					payload, mqttHost, mqttTopic, exception.getMessage()));
-		}
+		String message = setColorCommand.buildMessage();
+		LOG.info("publishing setColorCommand: " + message);
+		publisher.publish(message);
 	}
 
 }

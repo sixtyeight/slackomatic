@@ -38,6 +38,8 @@ public interface ILounge extends IRoom, IRestable {
 		IToggle powerMetacade();
 
 		IToggle powerLamp1();
+		
+		IToggle powerRegal();
 
 		IInvoker resetKillswitch();
 	}

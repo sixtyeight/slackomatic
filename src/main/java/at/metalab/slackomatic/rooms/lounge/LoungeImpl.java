@@ -29,6 +29,8 @@ public class LoungeImpl implements ILounge {
 
 	private final ILoungeLights loungeLights;
 
+	private final IToggle regal;
+
 	private final ILighting lighting = new ILighting() {
 
 		private void setIntensity(String value) {
@@ -43,6 +45,7 @@ public class LoungeImpl implements ILounge {
 				public void invoke() {
 					setIntensity("0");
 					lamp1.off();
+					regal.off();
 					loungeLights.power().off().invoke();
 				}
 			};
@@ -98,7 +101,8 @@ public class LoungeImpl implements ILounge {
 	};
 
 	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade,
-			IKillswitch killswitch, IToggle lamp1, ILoungeLights loungeLights) {
+			IKillswitch killswitch, IToggle lamp1, ILoungeLights loungeLights,
+			IToggle regal) {
 		this.benq = benq;
 		this.yamaha = yamaha;
 		this.nec = nec;
@@ -106,6 +110,7 @@ public class LoungeImpl implements ILounge {
 		this.killswitch = killswitch;
 		this.lamp1 = lamp1;
 		this.loungeLights = loungeLights;
+		this.regal = regal;
 	}
 
 	private final IDevices devices = new IDevices() {
@@ -261,6 +266,10 @@ public class LoungeImpl implements ILounge {
 		public IInvoker resetKillswitch() {
 			return killswitch.reset();
 		}
+
+		public IToggle powerRegal() {
+			return regal;
+		}
 	};
 
 	private void wakeUp() {
@@ -318,6 +327,7 @@ public class LoungeImpl implements ILounge {
 		rest.add(powerSaving().powerMetacade(), "powersaving/metacade/power");
 		rest.add(powerSaving().powerYamaha(), "powersaving/yamaha/power");
 		rest.add(powerSaving().powerLamp1(), "powersaving/lamp1/power");
+		rest.add(powerSaving().powerRegal(), "powersaving/regal/power");
 
 		rest.add(yamaha.volume().low(), "volume/low");
 		rest.add(yamaha.volume().medium(), "volume/medium");
