@@ -55,7 +55,7 @@ public class SlackomaticLounge {
 						"http://10.20.30.17:1234");
 
 				ILoungeLights loungeLights = new LoungeLightsImpl(mqtt,
-						"/lights");
+						"/lounge/lights");
 
 				IKillswitch killswitch = new KillswitchImpl(new File(
 						slackomaticHome, "killswitch"));
@@ -78,7 +78,7 @@ public class SlackomaticLounge {
 				IToggle regal = new IToggle() {
 
 					private MqttUnreliablePublisher publisher = new MqttUnreliablePublisher(
-							mqtt, "lounge/regal");
+							mqtt, "/lounge/regal");
 
 					public void on() {
 						publisher.publish("1");

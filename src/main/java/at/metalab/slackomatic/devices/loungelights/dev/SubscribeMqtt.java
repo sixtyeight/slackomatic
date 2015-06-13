@@ -10,13 +10,13 @@ public class SubscribeMqtt {
 
 	public static void main(String[] args) throws Exception {
 		MQTT mqtt = new MQTT();
-		mqtt.setHost("tcp://127.0.0.1:1883");
+		mqtt.setHost("tcp://10.20.30.90:1883");
 
 		BlockingConnection connection = mqtt.blockingConnection();
 		connection.connect();
 
-		Topic[] topics = { new Topic("lounge/lounge-light", QoS.AT_LEAST_ONCE),
-				new Topic("lounge/regal", QoS.AT_LEAST_ONCE) };
+		Topic[] topics = { new Topic("/lounge/lights", QoS.AT_LEAST_ONCE),
+				new Topic("/lounge/regal", QoS.AT_LEAST_ONCE) };
 		byte[] qoses = connection.subscribe(topics);
 
 		while (true) {
