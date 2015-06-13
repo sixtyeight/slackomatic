@@ -214,6 +214,17 @@ public class LoungeImpl implements ILounge {
 			};
 		};
 
+		public IInvoker sonos() {
+			return new IInvoker() {
+
+				public void invoke() {
+					wakeUp();
+					showHDMImirrored();
+					getYamaha().getInput().av2().invoke();
+				}
+			};
+		};
+
 	};
 
 	public IToggle power() {
@@ -320,6 +331,7 @@ public class LoungeImpl implements ILounge {
 				"devices/screeninvader_stable");
 		rest.add(devices().wii(), "devices/wii");
 		rest.add(devices().chromecast(), "devices/chromecast");
+		rest.add(devices().sonos(), "devices/sonos");
 
 		rest.add(powerSaving().blankProjector(), "powersaving/projector/blank");
 		rest.add(powerSaving().powerProjector(), "powersaving/projector/power");

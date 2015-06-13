@@ -24,6 +24,8 @@ public interface ILounge extends IRoom, IRestable {
 		IInvoker ownAudioKlinke();
 
 		IInvoker bt();
+		
+		IInvoker sonos();
 	}
 
 	public interface IPowerSaving {
