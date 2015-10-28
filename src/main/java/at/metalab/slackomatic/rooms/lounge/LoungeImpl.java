@@ -31,6 +31,8 @@ public class LoungeImpl implements ILounge {
 
 	private final IToggle regal;
 
+	private final IToggle spaceinvaders;
+	
 	private final ILighting lighting = new ILighting() {
 
 		private void setIntensity(String value) {
@@ -46,6 +48,7 @@ public class LoungeImpl implements ILounge {
 					setIntensity("0");
 					lamp1.off();
 					regal.off();
+					spaceinvaders.off();
 					loungeLights.power().off().invoke();
 				}
 			};
@@ -98,11 +101,19 @@ public class LoungeImpl implements ILounge {
 				}
 			};
 		}
+		
+		public IToggle regal() {
+			return regal;
+		}
+		
+		public IToggle spaceinvaders() {
+			return spaceinvaders;
+		}
 	};
 
 	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade,
 			IKillswitch killswitch, IToggle lamp1, ILoungeLights loungeLights,
-			IToggle regal) {
+			IToggle regal, IToggle spaceinvaders) {
 		this.benq = benq;
 		this.yamaha = yamaha;
 		this.nec = nec;
@@ -111,6 +122,7 @@ public class LoungeImpl implements ILounge {
 		this.lamp1 = lamp1;
 		this.loungeLights = loungeLights;
 		this.regal = regal;
+		this.spaceinvaders = spaceinvaders;
 	}
 
 	private final IDevices devices = new IDevices() {
@@ -353,6 +365,9 @@ public class LoungeImpl implements ILounge {
 		rest.add(lighting().chillig(), "lighting/chillig");
 		rest.add(lighting().normal(), "lighting/normal");
 		rest.add(lighting().chineseSweatshop(), "lighting/chinese_sweatshop");
+		
+		rest.add(lighting().regal(), "lighting/regal");
+		rest.add(lighting().spaceinvaders(), "lighting/spaceinvaders");
 	}
 
 	public IDevices devices() {

@@ -56,6 +56,10 @@ public interface ILounge extends IRoom, IRestable {
 		IInvoker normal();
 
 		IInvoker chineseSweatshop();
+		
+		IToggle regal();
+		
+		IToggle spaceinvaders();
 	}
 
 	ILighting lighting();

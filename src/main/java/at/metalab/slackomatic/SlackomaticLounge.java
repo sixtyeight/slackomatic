@@ -75,17 +75,29 @@ public class SlackomaticLounge {
 					}
 				};
 
+				final File blinkyDir = new File(slackomaticHome, "blinky");
+
 				IToggle regal = new IToggle() {
 
-					private MqttUnreliablePublisher publisher = new MqttUnreliablePublisher(
-							mqtt, "/lounge/regal");
-
 					public void on() {
-						publisher.publish("1");
+						Util.executeCommand(blinkyDir, "./regal_on.sh");
 					}
 
 					public void off() {
-						publisher.publish("0");
+						Util.executeCommand(blinkyDir, "./regal_off.sh");
+					}
+				};
+
+				IToggle spaceinvaders = new IToggle() {
+
+					public void on() {
+						Util.executeCommand(blinkyDir, "./spaceinvaders_on.sh");
+						LOG.info("executed spaceinvaders on");
+					}
+
+					public void off() {
+						Util.executeCommand(blinkyDir, "./spaceinvaders_off.sh");
+						LOG.info("executed spaceinvaders off");
 					}
 				};
 
@@ -98,7 +110,8 @@ public class SlackomaticLounge {
 
 				// and add the lounge room
 				restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
-						metacade, killswitch, lamp1, loungeLights, regal));
+						metacade, killswitch, lamp1, loungeLights, regal,
+						spaceinvaders));
 			}
 		};
 	}
