@@ -188,8 +188,8 @@ public class LoungeImpl implements ILounge {
 
 				public void invoke() {
 					wakeUp();
-					showHDMImirrored();
-					getYamaha().getInput().av6().invoke();
+					getYamaha().getInput().vAux().invoke();
+					showAVonProjector();
 				}
 			};
 
@@ -303,6 +303,10 @@ public class LoungeImpl implements ILounge {
 
 	protected void showHDMIonProjector() {
 		getBenq().display().input().hdmi().invoke();
+	}
+
+	protected void showAVonProjector() {
+		getBenq().display().input().video().invoke();
 	}
 
 	protected void showVGA1onProjector() {
