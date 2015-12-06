@@ -16,6 +16,10 @@ function nec(command) {
 	device('nec', command);
 };
 
+function hdmiwhisperer(command) {
+	device('hdmiwhisperer', command);
+};
+
 function lounge(command) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/slackomatic/rooms/lounge/' + command, true);

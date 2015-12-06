@@ -9,6 +9,8 @@ import org.fusesource.mqtt.client.MQTT;
 import at.metalab.slackomatic.api.IToggle;
 import at.metalab.slackomatic.devices.benq.IBenq;
 import at.metalab.slackomatic.devices.benq.ShellBenqImpl;
+import at.metalab.slackomatic.devices.hdmiwhisperer.HdmiWhispererImpl;
+import at.metalab.slackomatic.devices.hdmiwhisperer.IHdmiWhisperer;
 import at.metalab.slackomatic.devices.killswitch.IKillswitch;
 import at.metalab.slackomatic.devices.killswitch.KillswitchImpl;
 import at.metalab.slackomatic.devices.loungelights.ILoungeLights;
@@ -28,6 +30,7 @@ public class SlackomaticLounge {
 			.getCanonicalName());
 
 	public static void main(String[] args) throws Exception {
+
 		new SlackomaticTemplate("lounge", args) {
 			@Override
 			protected void setup(RestAPI restAPI, File slackomaticHome) {
@@ -101,12 +104,20 @@ public class SlackomaticLounge {
 					}
 				};
 
+				// default device on the raspberry pi
+				String pcmDevice = System.getProperty("hdmiwhisperer.device",
+						"default:CARD=ALSA");
+
+				IHdmiWhisperer hdmiWhisperer = new HdmiWhispererImpl(new File(
+						slackomaticHome, "hdmi_whisperer"), pcmDevice);
+
 				// register the devices
 				restAPI.addDevice("nec", nec);
 				restAPI.addDevice("benq", benq);
 				restAPI.addDevice("yamaha", yamaha);
 				restAPI.addDevice("metacade", metacade);
 				restAPI.addDevice("loungelights", loungeLights);
+				restAPI.addDevice("hdmiwhisperer", hdmiWhisperer);
 
 				// and add the lounge room
 				restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
@@ -115,5 +126,4 @@ public class SlackomaticLounge {
 			}
 		};
 	}
-
 }
