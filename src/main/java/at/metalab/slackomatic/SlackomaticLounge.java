@@ -19,6 +19,8 @@ import at.metalab.slackomatic.devices.metacade.IMetacade;
 import at.metalab.slackomatic.devices.metacade.MetacadeImpl;
 import at.metalab.slackomatic.devices.nec.INec;
 import at.metalab.slackomatic.devices.nec.NecImpl;
+import at.metalab.slackomatic.devices.vhdmiswitch.IVhdmiSwitch;
+import at.metalab.slackomatic.devices.vhdmiswitch.VhdmiSwitchImpl;
 import at.metalab.slackomatic.devices.yamaha.IYamaha;
 import at.metalab.slackomatic.devices.yamaha.ShellYamahaImpl;
 import at.metalab.slackomatic.rest.RestAPI;
@@ -111,6 +113,9 @@ public class SlackomaticLounge {
 				IHdmiWhisperer hdmiWhisperer = new HdmiWhispererImpl(new File(
 						slackomaticHome, "hdmi_whisperer"), pcmDevice);
 
+				// Virtual HDMI Switch (Facade to Pioneer / Yamaha / HDMI Whisperer)
+				IVhdmiSwitch vhdmiSwitch = new VhdmiSwitchImpl(hdmiWhisperer, yamaha);
+				
 				// register the devices
 				restAPI.addDevice("nec", nec);
 				restAPI.addDevice("benq", benq);
@@ -118,7 +123,8 @@ public class SlackomaticLounge {
 				restAPI.addDevice("metacade", metacade);
 				restAPI.addDevice("loungelights", loungeLights);
 				restAPI.addDevice("hdmiwhisperer", hdmiWhisperer);
-
+				restAPI.addDevice("vhdmiswitch", vhdmiSwitch);
+				
 				// and add the lounge room
 				restAPI.addRoom("lounge", new LoungeImpl(benq, yamaha, nec,
 						metacade, killswitch, lamp1, loungeLights, regal,
