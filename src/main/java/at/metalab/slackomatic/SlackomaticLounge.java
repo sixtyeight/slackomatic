@@ -108,7 +108,7 @@ public class SlackomaticLounge {
 
 				// default device on the raspberry pi
 				String pcmDevice = System.getProperty("hdmiwhisperer.device",
-						"default:CARD=ALSA");
+						"default:CARD=Device");
 
 				IHdmiWhisperer hdmiWhisperer = new HdmiWhispererImpl(new File(
 						slackomaticHome, "hdmi_whisperer"), pcmDevice);
