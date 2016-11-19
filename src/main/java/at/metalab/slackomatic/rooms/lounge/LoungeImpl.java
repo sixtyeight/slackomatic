@@ -188,8 +188,8 @@ public class LoungeImpl implements ILounge {
 
 				public void invoke() {
 					wakeUp();
-					getYamaha().getInput().vAux().invoke();
-					showAVonProjector();
+					showHDMImirrored();
+					getYamaha().getInput().av5().invoke();
 				}
 			};
 
