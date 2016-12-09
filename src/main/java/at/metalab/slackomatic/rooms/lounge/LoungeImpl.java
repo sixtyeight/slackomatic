@@ -32,13 +32,11 @@ public class LoungeImpl implements ILounge {
 	private final IToggle regal;
 
 	private final IToggle spaceinvaders;
-	
+
 	private final ILighting lighting = new ILighting() {
 
 		private void setIntensity(String value) {
-			Util.executeCommand(new File(
-					"/home/pi/slackomatic-addons/homematic"), "./power1.sh",
-					value);
+			Util.executeCommand(new File("/home/pi/slackomatic-addons/homematic"), "./power1.sh", value);
 		}
 
 		public IInvoker off() {
@@ -50,6 +48,7 @@ public class LoungeImpl implements ILounge {
 					regal.off();
 					spaceinvaders.off();
 					loungeLights.power().off().invoke();
+					turnOffLedStrip();
 				}
 			};
 		}
@@ -101,19 +100,18 @@ public class LoungeImpl implements ILounge {
 				}
 			};
 		}
-		
+
 		public IToggle regal() {
 			return regal;
 		}
-		
+
 		public IToggle spaceinvaders() {
 			return spaceinvaders;
 		}
 	};
 
-	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade,
-			IKillswitch killswitch, IToggle lamp1, ILoungeLights loungeLights,
-			IToggle regal, IToggle spaceinvaders) {
+	public LoungeImpl(IBenq benq, IYamaha yamaha, INec nec, IMetacade metacade, IKillswitch killswitch, IToggle lamp1,
+			ILoungeLights loungeLights, IToggle regal, IToggle spaceinvaders) {
 		this.benq = benq;
 		this.yamaha = yamaha;
 		this.nec = nec;
@@ -256,6 +254,7 @@ public class LoungeImpl implements ILounge {
 				powerSaving().powerMetacade().off();
 				powerSaving().powerLamp1().off();
 				lighting.off().invoke();
+				turnOffLedStrip();
 			}
 		};
 	}
@@ -343,8 +342,7 @@ public class LoungeImpl implements ILounge {
 		rest.add(devices().ps2(), "devices/ps2");
 		rest.add(devices().ps3(), "devices/ps3");
 		rest.add(devices().screeninvader(), "devices/screeninvader");
-		rest.add(devices().screeninvaderStable(),
-				"devices/screeninvader_stable");
+		rest.add(devices().screeninvaderStable(), "devices/screeninvader_stable");
 		rest.add(devices().wii(), "devices/wii");
 		rest.add(devices().chromecast(), "devices/chromecast");
 		rest.add(devices().sonos(), "devices/sonos");
@@ -361,15 +359,14 @@ public class LoungeImpl implements ILounge {
 		rest.add(yamaha.volume().medium(), "volume/medium");
 		rest.add(yamaha.volume().high(), "volume/high");
 
-		rest.add(powerSaving().resetKillswitch(),
-				"powersaving/killswitch/reset");
+		rest.add(powerSaving().resetKillswitch(), "powersaving/killswitch/reset");
 
 		rest.add(lighting().off(), "lighting/off");
 		rest.add(lighting().superChillig(), "lighting/super_chillig");
 		rest.add(lighting().chillig(), "lighting/chillig");
 		rest.add(lighting().normal(), "lighting/normal");
 		rest.add(lighting().chineseSweatshop(), "lighting/chinese_sweatshop");
-		
+
 		rest.add(lighting().regal(), "lighting/regal");
 		rest.add(lighting().spaceinvaders(), "lighting/spaceinvaders");
 	}
@@ -404,5 +401,14 @@ public class LoungeImpl implements ILounge {
 
 	protected ILoungeLights getLoungeLight() {
 		return loungeLights;
+	}
+
+	private void turnOffLedStrip() {
+		try {
+			Runtime.getRuntime().exec(new String[] { "mosquitto_pub", "-u", "iskomplett", "-P", "wurscht", "-d", "-t",
+					"/lounge/rgb", "-m", "000000", "-h", "10.20.30.96" });
+		} catch (Exception exception) {
+			exception.printStackTrace(System.err);
+		}
 	}
 }
