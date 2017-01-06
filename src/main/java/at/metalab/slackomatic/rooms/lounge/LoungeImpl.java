@@ -2,6 +2,10 @@ package at.metalab.slackomatic.rooms.lounge;
 
 import java.io.File;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import artnet4j.ArtNet;
+import artnet4j.packets.ArtDmxPacket;
 import at.metalab.slackomatic.Util;
 import at.metalab.slackomatic.api.IInvoker;
 import at.metalab.slackomatic.api.IToggle;
@@ -33,6 +37,47 @@ public class LoungeImpl implements ILounge {
 
 	private final IToggle spaceinvaders;
 
+	private ArtNet artnet;
+
+	private ArtDmxPacket off = build(0);
+
+	private ArtDmxPacket superChillig = build(25);
+
+	private ArtDmxPacket chillig = build(50);
+
+	private ArtDmxPacket normal = build(125);
+
+	private ArtDmxPacket chineseSweatshop = build(255);
+
+	private ArtDmxPacket build(int intensity) {
+		byte[] data = new byte[] {};
+
+		int leds = 170;
+
+		for (int i = 0; i < leds; i++) {
+			data = ArrayUtils.add(data, (byte) intensity);
+			data = ArrayUtils.add(data, (byte) intensity);
+			data = ArrayUtils.add(data, (byte) intensity);
+		}
+
+		ArtDmxPacket packet = new ArtDmxPacket();
+		packet.setUniverse(0, 2);
+		packet.setDMX(data, leds * 3);
+
+		return packet;
+	}
+
+	private void send(final ArtDmxPacket packet) {
+		if (artnet != null) {
+			try {
+				artnet.unicastPacket(packet, "192.168.88.255");
+			} catch (Throwable t) {
+				System.out.println("send-artnet failed: " + t);
+				t.printStackTrace(System.out);
+			}
+		}
+	}
+
 	private final ILighting lighting = new ILighting() {
 
 		private void setIntensity(String value) {
@@ -43,11 +88,7 @@ public class LoungeImpl implements ILounge {
 			return new IInvoker() {
 
 				public void invoke() {
-					setIntensity("0");
-					lamp1.off();
-					regal.off();
-					spaceinvaders.off();
-					loungeLights.power().off().invoke();
+					send(off);
 					turnOffLedStrip();
 				}
 			};
@@ -57,10 +98,7 @@ public class LoungeImpl implements ILounge {
 			return new IInvoker() {
 
 				public void invoke() {
-					setIntensity("0.3");
-					lamp1.off();
-					loungeLights.power().whiteOff().invoke();
-					loungeLights.setAmber("20");
+					send(superChillig);
 				}
 			};
 		}
@@ -69,10 +107,7 @@ public class LoungeImpl implements ILounge {
 			return new IInvoker() {
 
 				public void invoke() {
-					setIntensity("0.5");
-					lamp1.on();
-					loungeLights.setWhite("75");
-					loungeLights.setAmber("125");
+					send(normal);
 				}
 			};
 		}
@@ -81,10 +116,7 @@ public class LoungeImpl implements ILounge {
 			return new IInvoker() {
 
 				public void invoke() {
-					setIntensity("1");
-					lamp1.on();
-					loungeLights.setWhite("255");
-					loungeLights.setAmber("255");
+					send(chineseSweatshop);
 				}
 			};
 		}
@@ -93,10 +125,7 @@ public class LoungeImpl implements ILounge {
 			return new IInvoker() {
 
 				public void invoke() {
-					setIntensity("0.3");
-					lamp1.on();
-					loungeLights.setWhite("40");
-					loungeLights.setAmber("50");
+					send(chillig);
 				}
 			};
 		}
@@ -121,6 +150,13 @@ public class LoungeImpl implements ILounge {
 		this.loungeLights = loungeLights;
 		this.regal = regal;
 		this.spaceinvaders = spaceinvaders;
+
+		try {
+			artnet = new ArtNet();
+			artnet.init();
+			artnet.start();
+		} catch (Exception e) {
+		}
 	}
 
 	private final IDevices devices = new IDevices() {
