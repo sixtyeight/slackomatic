@@ -50,19 +50,12 @@ public class LoungeImpl implements ILounge {
 	private ArtDmxPacket chineseSweatshop = build(255);
 
 	private ArtDmxPacket build(int intensity) {
-		byte[] data = new byte[] {};
-
-		int leds = 170;
-
-		for (int i = 0; i < leds; i++) {
-			data = ArrayUtils.add(data, (byte) intensity);
-			data = ArrayUtils.add(data, (byte) intensity);
-			data = ArrayUtils.add(data, (byte) intensity);
-		}
+		// red, green and blue are off
+		byte[] data = new byte[] {0, 0, 0, (byte) intensity, (byte) intensity};
 
 		ArtDmxPacket packet = new ArtDmxPacket();
 		packet.setUniverse(0, 2);
-		packet.setDMX(data, leds * 3);
+		packet.setDMX(data, 5);
 
 		return packet;
 	}
