@@ -39,19 +39,19 @@ public class LoungeImpl implements ILounge {
 
 	private ArtNet artnet;
 
-	private ArtDmxPacket off = build(0);
+	private ArtDmxPacket off = build(0, 0);
 
-	private ArtDmxPacket superChillig = build(25);
+	private ArtDmxPacket superChillig = build(0, 25);
 
-	private ArtDmxPacket chillig = build(50);
+	private ArtDmxPacket chillig = build(0, 50);
 
-	private ArtDmxPacket normal = build(125);
+	private ArtDmxPacket normal = build(100, 200);
 
-	private ArtDmxPacket chineseSweatshop = build(255);
+	private ArtDmxPacket chineseSweatshop = build(255, 255);
 
-	private ArtDmxPacket build(int intensity) {
+	private ArtDmxPacket build(int intensityCold, int intensityWarm) {
 		// red, green and blue are off
-		byte[] data = new byte[] {0, 0, 0, (byte) intensity, (byte) intensity};
+		byte[] data = new byte[] {0, 0, 0, (byte) intensityWarm, (byte) intensityCold};
 
 		ArtDmxPacket packet = new ArtDmxPacket();
 		packet.setUniverse(0, 2);
