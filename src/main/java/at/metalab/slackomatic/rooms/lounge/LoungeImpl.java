@@ -43,7 +43,7 @@ public class LoungeImpl implements ILounge {
 
 	private ArtDmxPacket superChillig = build(0, 25);
 
-	private ArtDmxPacket chillig = build(0, 50);
+	private ArtDmxPacket chillig = build(0, 70);
 
 	private ArtDmxPacket normal = build(100, 200);
 
