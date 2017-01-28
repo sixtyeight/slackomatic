@@ -51,7 +51,10 @@ public class LoungeImpl implements ILounge {
 
 	private ArtDmxPacket build(int intensityCold, int intensityWarm) {
 		// red, green and blue are off
-		byte[] data = new byte[] {0, 0, 0, (byte) intensityWarm, (byte) intensityCold};
+		byte[] data = new byte[] {
+			0, 0, 0, (byte) intensityWarm, (byte) intensityCold, // Lampe 1
+			0, 0, 0, (byte) intensityWarm, (byte) intensityCold // Lampe 2
+		};
 
 		ArtDmxPacket packet = new ArtDmxPacket();
 		packet.setUniverse(0, 2);
