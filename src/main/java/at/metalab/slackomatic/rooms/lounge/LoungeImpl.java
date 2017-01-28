@@ -58,7 +58,7 @@ public class LoungeImpl implements ILounge {
 
 		ArtDmxPacket packet = new ArtDmxPacket();
 		packet.setUniverse(0, 2);
-		packet.setDMX(data, 5);
+		packet.setDMX(data, 10);
 
 		return packet;
 	}
