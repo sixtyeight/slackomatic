@@ -57,7 +57,7 @@ public class LoungeImpl implements ILounge {
 		};
 
 		ArtDmxPacket packet = new ArtDmxPacket();
-		packet.setUniverse(0, 2);
+		packet.setUniverse(0, Integer.valueOf(System.getProperty("artnetUniverse", "2")));
 		packet.setDMX(data, 10);
 
 		return packet;
@@ -66,7 +66,7 @@ public class LoungeImpl implements ILounge {
 	private void send(final ArtDmxPacket packet) {
 		if (artnet != null) {
 			try {
-				artnet.unicastPacket(packet, "192.168.88.255");
+				artnet.unicastPacket(packet, System.getProperty("artnetIP", "10.20.255.255"));
 			} catch (Throwable t) {
 				System.out.println("send-artnet failed: " + t);
 				t.printStackTrace(System.out);
@@ -152,6 +152,7 @@ public class LoungeImpl implements ILounge {
 			artnet.init();
 			artnet.start();
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
