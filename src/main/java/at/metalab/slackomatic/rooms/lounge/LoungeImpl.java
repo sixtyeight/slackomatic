@@ -2,8 +2,6 @@ package at.metalab.slackomatic.rooms.lounge;
 
 import java.io.File;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import artnet4j.ArtNet;
 import artnet4j.packets.ArtDmxPacket;
 import at.metalab.slackomatic.Util;
@@ -18,6 +16,8 @@ import at.metalab.slackomatic.devices.yamaha.IYamaha;
 import at.metalab.slackomatic.rest.RestBuilder;
 
 public class LoungeImpl implements ILounge {
+
+	private static int burstMode = Integer.valueOf(System.getProperty("slackomatic.burstMode", "1"));
 
 	private final IBenq benq;
 
@@ -65,11 +65,13 @@ public class LoungeImpl implements ILounge {
 
 	private void send(final ArtDmxPacket packet) {
 		if (artnet != null) {
-			try {
-				artnet.unicastPacket(packet, System.getProperty("artnetIP", "10.20.255.255"));
-			} catch (Throwable t) {
-				System.out.println("send-artnet failed: " + t);
-				t.printStackTrace(System.out);
+			for(int i = 0; i < burstMode; i++) {
+				try {
+					artnet.unicastPacket(packet, System.getProperty("artnetIP", "10.20.255.255"));
+				} catch (Throwable t) {
+					System.out.println("send-artnet failed: " + t);
+					t.printStackTrace(System.out);
+				}
 			}
 		}
 	}
